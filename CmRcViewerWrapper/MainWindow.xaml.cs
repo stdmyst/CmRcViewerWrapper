@@ -13,16 +13,14 @@ namespace CmRcViewerWrapper;
 public partial class MainWindow : Window
 {
     private IConfiguration _configuration;
-    private string _execPath = Consts.EXEC_PATH;
-    public ObservableCollection<ComboBoxItem> HostItems { get; set; }
-    public ComboBoxItem SelectedHost { get; set; }
+    private string _execPath;
+
+    public required ObservableCollection<ComboBoxItem> HostItems { get; set; }
+    public required ComboBoxItem SelectedHost { get; set; }
 
     public MainWindow()
     {
-        _configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", true, true)
-            .Build();
+        _configuration = GetConfiguration();
 
         _execPath = GetExecPathFromConfiguration();
 
@@ -61,7 +59,7 @@ public partial class MainWindow : Window
         SelectedHost = selectedHost;
         hosts.RemoveAt(0);
 
-        HostItems = new ObservableCollection<ComboBoxItem>() { selectedHost };
+        HostItems = new() { selectedHost };
 
         if (hosts.Count > 0)
         {
@@ -70,6 +68,14 @@ public partial class MainWindow : Window
                 HostItems.Add(new ComboBoxItem { Content = host });
             }
         }    
+    }
+
+    private IConfiguration GetConfiguration()
+    {
+        return new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", true, true)
+            .Build();
     }
 
     private string GetExecPathFromConfiguration()
